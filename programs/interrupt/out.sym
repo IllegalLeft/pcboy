@@ -1,0 +1,9 @@
+; this file was created with wlalink by ville helin <vhelin@iki.fi>.
+; wla symbolic information for "out.bin".
+
+[labels]
+00:0100 start
+00:0101 loop
+
+[definitions]
+00000001 _sizeof_start
