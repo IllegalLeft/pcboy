@@ -1,35 +1,37 @@
-# Sam's 8bitMUSH Computer Emulator Documentation
+# PCBoy -- Sam's 8bitMUSH Computer Emulator Documentation
 
-Foreward
-System Overview
-    Overview
-    Memory Map
-Input
-Display
-Sound
-CPU
-    Registers and Flags
-    Instruction Set
-    Interrupts
-    Comparison to GameBoy CPU
-    Comparison to 8080
-    Comparison to Z80
-    
-Programming
-    Small Programs
-    Large Programs
+- Foreward
+- System Overview
+   - Overview
+   - Memory Map
+- Input
+- Display
+- Sound
+- CPU
+  - Registers and Flags
+  - Instruction Set
+  - Interrupts
+  - Comparison to GameBoy CPU
+  - Comparison to 8080
+  - Comparison to Z80
+- Programming
+  - Small Programs
+  - Large Programs
 
 ---
 
 ## Foreward
 
-This is some dumb project that no one will ever see. It's a working CPU emulator attatched to virtual hardware on 8bitMUSH. Yes, I can hear you cringing.
+This is some wild project you might not care about. It's a working CPU emulator attatched to virtual hardware on 8bitMUSH. Yes, I can hear you cringing.
 
 
 ## History
 Early to Mid 2020 -- Started CPU project after being on hiatus for a while time. Made basic CPU emulation with the first chunk of instructions (Not $CB prefix). Scripts to convert binaries to attributes to copy and past in made to facilitate large programming.
+
 October 21st, 2020 -- Help documentation and underlying help system added.
+
 October 28th, 2020 -- Interrupts added.
+
 December, 2020 -- Screen and input added.
 
 ---
@@ -37,13 +39,18 @@ December, 2020 -- Screen and input added.
 ## System
 
 ### Overview
-CPU	- 8-bit clone of the GameBoy's SHARP LR35902 CPU (similar to an Intel 8080 & Zilog Z80)
-Memory	- 65KB separated into 256 pages/attributes stored in decimal
-Screen	- 80x25 characters
-	- 1 byte per character, no color
-	- 2000 bytes
-Colors	- TBD
-Sound	- TBD, likely just play() format
+- CPU
+  - 8-bit clone of the GameBoy's SHARP LR35902 CPU (similar to an Intel 8080 & Zilog Z80)
+- Memory
+  - 65KB separated into 256 pages/attributes stored in decimal
+- Screen
+  - 80x25 characters
+    - 1 byte per character, no color
+    - 2000 bytes
+- Colors
+  - TBD
+- Sound
+  - TBD, likely just play() format
 
 ### Memory Map
     0000 - 003F	    RST Vectors
@@ -74,18 +81,19 @@ In the second last page, 254 ($FE00-$FEFF), there is a buffer with the last inpu
 ### Registers and Flags
 Registers can be used as smaller 8-bit units but also paired up as specific 16-bit registers for addressing and larger numbers. Pairs cannot be mix and matched.Stack pointer and program counter/pointer are 16-bit pointers.
 
-16-bit Pair	High	Low	Name/Function
-AF		A	F	Accumulator and Flags
-BC		B	C	General Purpose
-DE		D	E	General Purpose
-HL		H	L	General Purpose, Pointer
-SP		-	-	Stack Pointer
-PC		-	-	Program Counter
+    16-bit Pair	High	Low	Name/Function
+    AF		A	F	Accumulator and Flags
+    BC		B	C	General Purpose
+    DE		D	E	General Purpose
+    HL		H	L	General Purpose, Pointer
+    SP		-	-	Stack Pointer
+    PC		-	-	Program Counter
 
 The flag register, F, uses the upper nibble (bits 7-4) as flags for various purposes.
-    7	6   5	4   3	2   1	0
-    zf	n   h	cy  -	-   -	-
 
+    7   6   5   4   3   2   1   0
+    zf  n   h   cy  -   -   -   -
+    
     zf	- Zero flag
     n	- Add/subtract flag (for BCD)
     h	- half carry flag (for BCD)
@@ -95,35 +103,37 @@ Zero flag is set when the result of the operation is zero. It's used for conditi
 
 ### Instruction Set
 The instruction set is similar to an 8080 with a few Z80 elements and it's syntax.
-ADD -- Add
-ADC -- Add with Carry
-AND -- Bitwise AND
-ASL -- Arithmetic Shift Left
-ASR -- Arithmetic Shift Right
-BIT -- Bit set
-DAA -- Decimal Arithmetic Adjust
-HALT -- Halt
-JR -- Jump to Routine
-LD -- Load
-NOP -- No Operation
-OR -- Bitwise OR
-POP -- Pop from stack
-PUSH -- Push to stack
-RES -- Bit Reset
-RET -- Return from subroutine
-RETI -- Return from Interrupt
-ROL -- Rotate Left
-ROR -- Rotate Right
-RST -- Reset vector
-SUB -- Subtract
-SBC -- Subtract with Carry
-SWAP -- Swap nibble
-XOR -- Bitwise XOR
-TODO
+
+    ADD -- Add
+    ADC -- Add with Carry
+    AND -- Bitwise AND
+    ASL -- Arithmetic Shift Left
+    ASR -- Arithmetic Shift Right
+    BIT -- Bit set
+    DAA -- Decimal Arithmetic Adjust
+    HALT -- Halt
+    JR -- Jump to Routine
+    LD -- Load
+    NOP -- No Operation
+    OR -- Bitwise OR
+    POP -- Pop from stack
+    PUSH -- Push to stack
+    RES -- Bit Reset
+    RET -- Return from subroutine
+    RETI -- Return from Interrupt
+    ROL -- Rotate Left
+    ROR -- Rotate Right
+    RST -- Reset vector
+    SUB -- Subtract
+    SBC -- Subtract with Carry
+    SWAP -- Swap nibble
+    XOR -- Bitwise XOR
+    TODO
 
 
 ### Interrupts
 The CPU has 7 interrupts, all using the reset vectors (RST $00, $08, $10, $18, $20, $28, $30, $38 respectively). The first vector ($00) is reserved for a software reset of the system as this is where the processor begins execution. Reset 7 (RST $38), is a commonly used filling byte ($FF) so it may be used for a reset for safety.
+
     Vector  Use
     $00	    Computer Reset
     $08	    Screen "VBlank"
@@ -133,6 +143,7 @@ The CPU has 7 interrupts, all using the reset vectors (RST $00, $08, $10, $18, $
     $28	    @AHOURLY
     $30	
     $38	    
+    
 An interrupt is called by putting a Reset Vector byte into the INT attribute. This will likely be a decimal value of one of the RST commands. If the internal register INTE, is 1, and INTE filled with something non-zero, the CPU will sense an interrupt before reading the next command byte. It will then run the instruction in INTE before resuming normal execution (unless another interrupt is sensed).
 
 ### Comparison to GameBoy CPU
