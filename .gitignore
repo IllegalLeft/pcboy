@@ -1,0 +1,5 @@
+# Compiled files
+*.o
+out.bin
+out.mush
+out.sym
