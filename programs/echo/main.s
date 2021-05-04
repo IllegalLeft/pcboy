@@ -91,11 +91,9 @@ PrintStr:
     ret z
     ld (de), a
     inc de
-    ;ld a, 15		; fg color
     ld a, (FG)
     ld (de), a
     inc de
-    xor a		; bg color
     ld a, (BG)
     ld (de), a
     inc de

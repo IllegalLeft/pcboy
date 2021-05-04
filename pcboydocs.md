@@ -64,15 +64,22 @@ December, 2020 -- Screen and input added.
 
 ## Input
 
-In the second last page, 254 ($FE00-$FEFF), there is a buffer with the last input text in ascii format. Special characters are currently not supported but most typical ASCII alphanumeric characters are fine.
+In the second last page, 254 ($FE00-$FEFF), there is a buffer with the last input text in ascii format. When the input command is used, the input text is converted into byte format and stored in this page in memory in order. Next, the input interrupt is executed if interrupts are enabled, jumping back to the appropriate address (see Interrupts for more information). Special characters are currently not supported but most typical ASCII alphanumeric characters are fine. Extended characters should not be inputted.
 
 ---
 
 ## Display
 
+The screen is 40x20 characters and 256 colours. The video memory (VRAM) begins at $A000, consisting of 3 bytes per screen character. The first byte is the character itself, using codepage 437 and then the next two bytes are the fore and background colours respectively. This means the screen memory takes up 2400 bytes of memory.
+
+    Byte 0        Byte 1        Byte 2
+    Character     Fore-Color    Back-Color    ...
+
 ---
 
 ## Sound
+
+TBD
 
 ---
 
@@ -104,31 +111,65 @@ Zero flag is set when the result of the operation is zero. It's used for conditi
 ### Instruction Set
 The instruction set is similar to an 8080 with a few Z80 elements and it's syntax.
 
+    Movement
+    LD -- Load
+    LDD -- Load, then Decrement
+    LDI -- Load, then Increment
+    LDH -- Load from High memory
+
+    Arithmetic
     ADD -- Add
     ADC -- Add with Carry
-    AND -- Bitwise AND
-    ASL -- Arithmetic Shift Left
-    ASR -- Arithmetic Shift Right
-    BIT -- Bit set
-    DAA -- Decimal Arithmetic Adjust
-    HALT -- Halt
-    JR -- Jump to Routine
-    LD -- Load
-    NOP -- No Operation
-    OR -- Bitwise OR
-    POP -- Pop from stack
-    PUSH -- Push to stack
-    RES -- Bit Reset
-    RET -- Return from subroutine
-    RETI -- Return from Interrupt
-    ROL -- Rotate Left
-    ROR -- Rotate Right
-    RST -- Reset vector
     SUB -- Subtract
     SBC -- Subtract with Carry
-    SWAP -- Swap nibble
+    INC -- Increment
+    DEC -- Decrement
+    CP -- Compare
+
+    Bitwise Operations
+    AND -- Bitwise AND
+    OR -- Bitwise OR
     XOR -- Bitwise XOR
-    TODO
+    BIT -- Bit Test
+    SET -- Bit Set
+    RES -- Bit Reset
+    CPL -- Complement
+
+    Rotates and Shifts
+    RL -- Rotate Left with carry
+    RR -- Rotate Right with carry
+    RLA -- Rotate Accumulator Left
+    RRA -- Rotate Accumulator Right
+    RLC -- Rotate Left set carry accordingly
+    RRC -- Rotate Right set carry accordingly
+    RLCA -- Rotate Accumulator Left set carry accordingly
+    RRCA -- Rotate Accumulator Right set carry accordingly
+    SLA -- Shift Left zero 0th bit
+    SRA -- Shift Right 7th bit repeat
+    SRL -- Shift Right zero 7th bit
+
+    Jumps
+    JP -- Jump
+    JR -- Jump Relative
+    CALL -- Call routine
+    RST -- Reset vector
+    RET -- Return from subroutine
+    RETI -- Return from Interrupt
+
+    Stack
+    POP -- Pop from stack
+    PUSH -- Push to stack
+
+    Miscellaneous
+    CCF -- Clear Carry flag
+    DAA -- Decimal Arithmetic Adjust
+    DI -- Disable Interrupts
+    EI -- Enable Interrupts
+    HALT -- Halt
+    STOP -- Halt CPU
+    NOP -- No Operation
+    SCF -- Set Carry flag
+    SWAP -- Swap nibbles
 
 
 ### Interrupts
